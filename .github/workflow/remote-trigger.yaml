@@ -1,0 +1,34 @@
+name: Update Odigos Dependencies
+
+on:   
+  repository_dispatch:
+    types: [enterprise-dependencies-update]
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: print pr creator
+        run: |
+          echo "PR creator is: ${{ github.event.client_payload.pr_creator }}"
+
+      - name: create dependencies update pr
+        id: create_dependencies_update_pr
+        run: |
+          git checkout -b ${{ steps.github_preperation.outputs.branch_name }}
+          git add .
+          git commit -m "update Odigos dependencies"
+          git push origin ${{ steps.github_preperation.outputs.branch_name }}
+
+          PR_LINK=$(gh pr create \
+            --title "chore: automatic dependencies syncer bot" \ 
+            --body "Automated PR to update Odigos enterprise components after a dependency module merge.
+              PR created by: @${{ github.event.client_payload.pr_creator }}"
+            --base main \
+            --head ${{ steps.github_preperation.outputs.branch_name }})
+          
+          # Extract PR number from PR_LINK
+          PR_NUMBER=$(echo "$PR_LINK" | awk -F '/' '{print $NF}')
