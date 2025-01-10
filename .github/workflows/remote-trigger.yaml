@@ -19,19 +19,7 @@ jobs:
 
       - name: Extract PR Creator
         id: pr_creator
-        run: echo "::set-output name=pr_creator::${{ github.event.pull_request.user.login }}"
-
-      - name: Get PR Creator and Branch Details
-        id: pr_details
-        run: |
-          echo "::set-output name=creator::${{ github.event.pull_request.user.login }}"
-          echo "::set-output name=base_branch::${{ github.event.pull_request.base.ref }}"
-          echo "::set-output name=head_branch::${{ github.event.pull_request.head.ref }}"
-
-      - name: Validate Branches
-        if: ${{ github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'develop' }}
-        run: echo "This PR is from 'develop' to 'main'"
-
+        run: echo "name=pr_creator:${{ github.event.client_payload.pr_creator }}"
 
       # - name: create dependencies update pr
       #   id: create_dependencies_update_pr
