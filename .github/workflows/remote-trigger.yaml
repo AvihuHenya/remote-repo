@@ -36,6 +36,8 @@ jobs:
           
       - name: create dependencies update pr
         id: create_dependencies_update_pr
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN}}
         run: |
           git checkout -b ${{ steps.github_preperation.outputs.branch_name }}
           git add .
