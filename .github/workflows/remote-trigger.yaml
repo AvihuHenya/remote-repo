@@ -22,7 +22,7 @@ jobs:
   
       - name: delete existing branch
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           # Check if a pull request already exists for the branch and close it if it does
           EXISTING_PR=$(gh pr list --head "${{ steps.github_preperation.outputs.branch_name }}" --base "main" --state "open" --json number --jq '.[0].number')
