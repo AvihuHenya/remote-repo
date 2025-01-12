@@ -12,27 +12,27 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
-      - name: Print github.event Object
-        run: |
-          echo "${{ toJson(github.event) }}" > event.json
-          cat event.json
-
-      - name: Extract PR Creator
-        id: pr_creator
-        run: echo "name=pr_creator:${{ github.event.client_payload.pr_creator }}"
-      
-
       - name: github preperation
         id: github_preperation
         run: |
           # Set global Git configurations
           git config --global user.email "bot@keyval.dev"
           git config --global user.name "Odigos Release Bot"
+          branch_name="sync-dependencies-bot"
+  
+      - name: delete existing branch
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN }}
+        run: |
+          # Check if a pull request already exists for the branch and close it if it does
+          EXISTING_PR=$(gh pr list --head ${{ steps.github_preperation.outputs.branch_name }} --base main --state open --json number --jq '.[0].number')
+          if [ ! -z "$EXISTING_PR" ]; then
+              gh pr close $EXISTING_PR --delete-branch
+          fi
 
-          BRANCH_PREFIX="sync-dependencies-bot-"
-          echo "branch_prefix=${BRANCH_PREFIX}-" >> $GITHUB_OUTPUT
-          echo "branch_name=${BRANCH_PREFIX}$(date +'%Y%m%d%H%M%S')_${{ github.event.client_payload.pr_creator }}" >> $GITHUB_OUTPUT
-          
+          BRANCH_EXISTS=$(git ls-remote --heads origin ${{ steps.github_preperation.outputs.branch_name }})
+          if [ ! -z "$BRANCH_EXISTS" ]; then
+              git push origin --delete ${{ steps.github_preperation.outputs.branch_name }}  
           
       - name: create dependencies update pr
         id: create_dependencies_update_pr
