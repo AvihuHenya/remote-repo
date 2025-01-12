@@ -18,7 +18,7 @@ jobs:
           # Set global Git configurations
           git config --global user.email "bot@keyval.dev"
           git config --global user.name "Odigos Release Bot"
-          branch_name="sync-dependencies-bot"
+          echo "branch_name=sync-dependencies-bot" >> $GITHUB_OUTPUT
   
       - name: delete existing branch
         env:
