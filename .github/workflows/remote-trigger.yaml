@@ -25,9 +25,9 @@ jobs:
           GH_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN }}
         run: |
           # Check if a pull request already exists for the branch and close it if it does
-          EXISTING_PR=$(gh pr list --head ${{ steps.github_preperation.outputs.branch_name }} --base main --state open --json number --jq '.[0].number')
+          EXISTING_PR=$(gh pr list --head "${{ steps.github_preperation.outputs.branch_name }}" --base "main" --state "open" --json number --jq '.[0].number')
           if [ ! -z "$EXISTING_PR" ]; then
-              gh pr close $EXISTING_PR --delete-branch
+              gh pr close "$EXISTING_PR" --delete-branch
           fi
 
           BRANCH_EXISTS=$(git ls-remote --heads origin ${{ steps.github_preperation.outputs.branch_name }})
