@@ -20,21 +20,38 @@ jobs:
       - name: Extract PR Creator
         id: pr_creator
         run: echo "name=pr_creator:${{ github.event.client_payload.pr_creator }}"
+      
 
-      # - name: create dependencies update pr
-      #   id: create_dependencies_update_pr
-      #   run: |
-      #     git checkout -b ${{ steps.github_preperation.outputs.branch_name }}
-      #     git add .
-      #     git commit -m "update Odigos dependencies"
-      #     git push origin ${{ steps.github_preperation.outputs.branch_name }}
+      - name: github preperation
+        id: github_preperation
+        run: |
+          # Set global Git configurations
+          git config --global user.email "bot@keyval.dev"
+          git config --global user.name "Odigos Release Bot"
 
-      #     PR_LINK=$(gh pr create \
-      #       --title "chore: automatic dependencies syncer bot" \ 
-      #       --body "Automated PR to update Odigos enterprise components after a dependency module merge.
-      #         PR created by: @${{ github.event.client_payload.pr_creator }}"
-      #       --base main \
-      #       --head ${{ steps.github_preperation.outputs.branch_name }})
+          BRANCH_PREFIX="sync-dependencies-bot-"
+          echo "branch_prefix=${BRANCH_PREFIX}-" >> $GITHUB_OUTPUT
+          echo "branch_name=${BRANCH_PREFIX}$(date +'%Y%m%d%H%M%S')_${{ github.event.client_payload.pr_creator }}" >> $GITHUB_OUTPUT
           
-      #     # Extract PR number from PR_LINK
-      #     PR_NUMBER=$(echo "$PR_LINK" | awk -F '/' '{print $NF}')
+          
+      - name: create dependencies update pr
+        id: create_dependencies_update_pr
+        run: |
+          git checkout -b ${{ steps.github_preperation.outputs.branch_name }}
+          git add .
+          git commit -m "update Odigos dependencies"
+          git push origin ${{ steps.github_preperation.outputs.branch_name }}
+
+          PR_LINK=$(gh pr create \
+            --title "chore: automatic dependencies syncer bot" \ 
+            --body "Automated PR to update Odigos enterprise components after a dependency module merge.
+              PR created by: @${{ github.event.client_payload.pr_creator }}"
+            --base main \
+            --head ${{ steps.github_preperation.outputs.branch_name }})
+          echo "PR_LINK=$PR_LINK" >> $GITHUB_ENV
+
+          # Extract PR number from PR_LINK
+          PR_NUMBER=$(echo "$PR_LINK" | awk -F '/' '{print $NF}')
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV  
+
+      
