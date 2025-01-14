@@ -49,7 +49,7 @@ jobs:
 
           PR_LINK=$(gh pr create \
           --title "chore: automatic dependencies syncer bot" \
-          --body "Automated PR to update Odigos enterprise components after a dependency module merge.\nPR created by: @${{ github.event.client_payload.pr_creator }}" \
+          --body "Automated PR to update Odigos enterprise components after a dependency module merge. PR created by: @${{ github.event.client_payload.pr_creator }}" \
           --base main \
           --head ${{ steps.github_preperation.outputs.branch_name }})
           echo "PR_LINK=$PR_LINK" >> $GITHUB_ENV  
