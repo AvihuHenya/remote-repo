@@ -41,6 +41,8 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_TOKEN}}
         run: |
           git checkout -b ${{ steps.github_preperation.outputs.branch_name }}
+          echo "Your file content goes here" > newfile.txt
+          git add newfile.txt
           git add .
           git commit -m "update Odigos dependencies"
           git push origin ${{ steps.github_preperation.outputs.branch_name }}
